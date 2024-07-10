@@ -1,0 +1,15 @@
+.cards {
+  display: flex;
+  flex-direction: row;
+}
+
+.image-container {
+  width: 300px;
+  height: auto;
+
+}
+
+.image {
+    width: 300px;
+      height: auto;
+}
