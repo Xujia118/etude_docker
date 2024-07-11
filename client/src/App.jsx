@@ -11,9 +11,15 @@ function App() {
   }, []);
 
   async function fetchImages() {
-    const data = await axios.get(import.meta.env.VITE_API_URL);
-    console.log(data.data);
-    setImages(data.data);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/images`
+      );
+      setImages(response.data.images);
+    } catch (err) {
+      console.error("Error fetching images:", error);
+      setImages([]);
+    }
   }
 
   return (

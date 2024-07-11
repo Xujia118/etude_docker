@@ -1,13 +1,16 @@
 const express = require("express");
 const cors = require("cors")
+const path = require("path");
 
 const app = express();
+
 const PORT = 3000
 
 app.use(cors());
+app.use(express.json())
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
-
-app.get("/", async (req, res) => {
+app.get("/api/images", async (req, res) => {
     const images = [
       {
         name: "seaside1",
@@ -23,7 +26,7 @@ app.get("/", async (req, res) => {
       },
     ];
 
-    res.json(images)
+    res.json({ images })
 })
 
 app.listen(PORT, () => {
