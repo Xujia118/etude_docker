@@ -6,7 +6,11 @@ const app = express();
 
 const PORT = 3000
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://your-amplify-domain.amplifyapp.com",
+  })
+);
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "../client/dist")));
 

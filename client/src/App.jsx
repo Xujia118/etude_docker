@@ -11,10 +11,11 @@ function App() {
   }, []);
 
   async function fetchImages() {
+    const API_URL =
+      import.meta.env.VITE_API_URL || "http://35.91.193.171:3000/api/images";
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/images`
-      );
+      const response = await axios.get(API_URL);
       setImages(response.data.images);
     } catch (err) {
       console.error("Error fetching images:", error);
