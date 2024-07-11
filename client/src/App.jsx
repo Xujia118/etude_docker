@@ -11,7 +11,7 @@ function App() {
   }, []);
 
   async function fetchImages() {
-    const data = await axios.get("http://localhost:3000");
+    const data = await axios.get(import.meta.env.VITE_API_URL);
     console.log(data.data);
     setImages(data.data);
   }
@@ -19,10 +19,10 @@ function App() {
   return (
     <div className="cards">
       {images.map((image) => (
-        <section className="card">
+        <section className="card" key={image.name}>
           <h1>big one!</h1>
           <div className="image-container" key={image.name}>
-            <h3 className="image-title" >{image.name}</h3>
+            <h3 className="image-title">{image.name}</h3>
             <img className="image" src={image.url} />
           </div>
         </section>
