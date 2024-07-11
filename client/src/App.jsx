@@ -11,8 +11,7 @@ function App() {
   }, []);
 
   async function fetchImages() {
-    const API_URL =
-      import.meta.env.VITE_API_URL || "http://35.91.193.171:3000/api/images";
+    const API_URL = import.meta.env.VITE_API_URL;
 
     try {
       const response = await axios.get(API_URL);
