@@ -63,7 +63,7 @@ jobs:
 
             # Stop and remove old container if it exists
             sudo docker stop beach || true
-            sudo docker rm beach || rue
+            sudo docker rm beach || true
       
             # Run Docker container
             sudo docker run 
