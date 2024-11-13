@@ -17,7 +17,7 @@ function App() {
       const response = await axios.get(API_URL);
       setImages(response.data.images);
     } catch (err) {
-      console.error("Error fetching images:", error);
+      console.error("Error fetching images:", err);
       setImages([]);
     }
   }
