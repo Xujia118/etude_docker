@@ -1,0 +1,80 @@
+# Deploy the EC2 instance, the usual stuff
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+        EC2_HOST: ${{ steps.start-instance.outputs.EC2_HOST }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+          aws-region: us-west-2
+
+        # Retrieve the instance ID from S3
+      - name: Retrieve EC2 instance ID from S3
+        id: get-instance-id
+        run: | 
+            aws s3 cp s3://dine-and-dash-2024/dine-dash-ec2-instance-id.txt .
+            EC2_INSTANCE_ID=$(cat dine-dash-ec2-instance-id.txt)
+            echo "EC2_INSTANCE_ID=${EC2_INSTANCE_ID}" >> $GITHUB_ENV
+
+        # Start the instance and get the IP address
+        # The following code requires an existing instance, so it has an id. 
+        # The instance can be stopped, but it must exist or the code wont' work.
+      - name: Start EC2 instance and get IP address
+        id: start-instance
+        run: |
+          aws ec2 start-instances --instance-ids ${{ env.EC2_INSTANCE_ID }} 
+          IP_ADDRESS=$(aws ec2 describe-instances --instance-ids ${{ env.EC2_INSTANCE_ID }} --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
+          echo "EC2_HOST=$IP_ADDRESS" >> $GITHUB_ENV
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with: 
+          ssh-private-key: ${{ secrets.EC2_KEY }}
+
+      - name: Build and run Docker container on EC2
+        env:
+          EC2_HOST: ${{ env.EC2_HOST }} # public ip address
+          GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker.git"
+          DOCKER_IMAGE_NAME: beach
+          DOCKER_CONTAINER_NAME: beach
+          DIR_NAME: beach
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 22 ubuntu@$EC2_HOST << EOF
+            if [ ! -d "/home/ubuntu/$DIR_NAME" ]; then
+              mkdir -p /home/ubuntu/$DIR_NAME
+              git clone $GITHUB_REPO_URL /home/ubuntu/$DIR_NAME
+            fi
+
+            cd /home/ubuntu/$DIR_NAME
+
+            # Configure Git to trust this directory
+            sudo git config --global --add safe.directory /home/ubuntu/$DIR_NAME
+            
+            # Pull repository
+            sudo git pull origin main
+
+            # Build Docker image
+            sudo docker build -t $DOCKER_IMAGE_NAME -f /home/ubuntu/$DIR_NAME/server/Dockerfile /home/ubuntu/$DIR_NAME
+
+            # Stop and remove old container if it exists
+            sudo docker stop $DOCKER_IMAGE_NAME || true
+            sudo docker rm $DOCKER_IMAGE_NAME || true
+      
+            # Run Docker container
+            sudo docker run --name $DOCKER_CONTAINER_NAME -d $DOCKER_CONTAINER_NAME
+          EOF
