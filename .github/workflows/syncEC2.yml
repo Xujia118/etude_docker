@@ -49,23 +49,32 @@ jobs:
       - name: Build and run Docker container on EC2
         env:
           EC2_HOST: ${{ env.EC2_HOST }} # public ip address
+          GITHUB_REPO_URL: "git@github.com:Xujia118/etude_docker.git"
+          DOCKER_IMAGE_NAME: beach
+          DOCKER_CONTAINER_NAME: beach
+          DIR_NAME: beach
         run: |
           ssh -o StrictHostKeyChecking=no -p 22 ubuntu@$EC2_HOST << EOF
-            cd /home/ubuntu/beach
+            if [ ! -d "/home/ubuntu/$DIR_NAME" ]; then
+              mkdir -p /home/ubuntu/$DIR_NAME
+              git clone $GITHUB_REPO_URL /home/ubuntu/$DIR_NAME
+            fi
+
+            cd -p /home/ubuntu/$DIR_NAME
 
             # Configure Git to trust this directory
-            sudo git config --global --add safe.directory /home/ubuntu/beach
+            sudo git config --global --add safe.directory /home/ubuntu/$DIR_NAME
             
+            # Pull repository
             sudo git pull origin main
 
             # Build Docker image
-            sudo docker build -t --name beach beach .
+            sudo docker build -t $DOCKER_IMAGE_NAME .
 
             # Stop and remove old container if it exists
-            sudo docker stop beach || true
-            sudo docker rm beach || true
+            sudo docker stop $DOCKER_IMAGE_NAME || true
+            sudo docker rm $DOCKER_IMAGE_NAME || true
       
             # Run Docker container
-            sudo docker run 
-
+            sudo docker run --name $DOCKER_CONTAINER_NAME -d $DOCKER_CONTAINER_NAME
           EOF
