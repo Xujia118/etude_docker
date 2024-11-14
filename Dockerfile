@@ -30,7 +30,5 @@ COPY --from=client-builder /app/client/dist /app/frontend
 COPY --from=server /app /app
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-
-# EXPOSE 3000
-# CMD ["npm", "start", "--prefix", "server"]
+EXPOSE 3000
+CMD nginx -g "daemon off;" & npm start --prefix /app/server
