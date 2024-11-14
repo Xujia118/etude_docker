@@ -17,11 +17,11 @@ COPY server/package.json ./server/
 RUN cd server && npm install
 COPY server ./server/
 
-# Set ngnix
-FROM ngnix:alpine
+# Set nginx
+FROM nginx:alpine
 
 # Copy the Nginx configuration file
-COPY ngnix.conf /etc/ngnix/ngnix.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy the frontend build files directly to the Nginx root location
 COPY --from=client-builder /app/client/dist /app/frontend
