@@ -1,29 +1,19 @@
 services:
   frontend:
     build:
-      context: ./client/
-      dockerfile: Dockerfile # Points to the Dockerfile inside the frontend folder
+      context: .
+      dockerfile: ./client/Dockerfile # Points to the Dockerfile inside the frontend folder
+    ports:
+      - "80:80"
     networks:
       - app-network
 
   backend:
     build:
-      context: ./server/
-      dockerfile: Dockerfile # Points to the Dockerfile inside the backend folder
+      context: .
+      dockerfile: ./server/Dockerfile # Points to the Dockerfile inside the backend folder
     ports:
       - "3000:3000"
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:alpine
-    depends_on:
-      - frontend
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf # Use nginx.conf from the root
-      - ./client/dist:/usr/share/nginx/html # Mount the built 'dist' folder
-    ports:
-      - "80:80"
     networks:
       - app-network
 

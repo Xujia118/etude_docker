@@ -3,9 +3,9 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY package.json ./server/
+COPY ./server/package.json ./server/
 RUN cd server && npm install
-COPY . ./server/
+COPY ./server ./server/
 
 # Expose the backend port
 EXPOSE 3000
