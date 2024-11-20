@@ -17,6 +17,15 @@ services:
     networks:
       - app-network
 
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
