@@ -1,28 +1,10 @@
 services:
-  frontend:
+  app:
     build:
       context: .
-      dockerfile: ./client/Dockerfile # Points to the Dockerfile inside the frontend folder
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
-    networks:
-      - app-network
-
-  backend:
-    build:
-      context: .
-      dockerfile: ./server/Dockerfile # Points to the Dockerfile inside the backend folder
-    ports:
-      - "3000:3000"
-    networks:
-      - app-network
-
-  nginx:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "8080:80"
+      - "8080:3000"
     networks:
       - app-network
 

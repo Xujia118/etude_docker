@@ -1,8 +1,18 @@
-# Copy dist to Nginx folder
-FROM nginx:alpine
+FROM node:alpine as build
 
-# Copy the dist folder from the client-builder stage to the Nginx web directory
-COPY --from=client-builder /app/client/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Optionally, copy your custom nginx.conf file
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY client/package.json ./client/package.json
+RUN cd client && npm install
+COPY client ./client
+RUN cd client && npm run build
+
+COPY server/package.json ./server/package.json
+RUN cd server && npm install
+COPY server ./server
+
+RUN mkdir -p /app/server/public
+RUN cp -r /app/client/dist /app/server/public
+
+EXPOSE 3000
+CMD ["npm", "start", "--prefix", "/app/server"]
