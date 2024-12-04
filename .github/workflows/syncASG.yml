@@ -1,0 +1,71 @@
+name: Deploy to Auto Scaling Group
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: us-east-1
+
+    - name: Create New Launch Template Version
+      id: create-launch-template
+      env:
+        GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
+      run: |
+        # Encode the User Data script
+        USER_DATA=$(base64 <<EOF
+        #!/bin/bash
+        sudo apt-get update -y
+        sudo apt-get install -y git docker.io docker-compose
+        sudo systemctl start docker
+        sudo systemctl enable docker
+
+        REPO_DIR="/home/ubuntu/my-webapp"
+        if [ ! -d "$GITHUB_REPO_URL" ]; then
+          git clone $GITHUB_REPO_URL
+        else
+          cd $GITHUB_REPO_URL
+          git pull origin main
+        fi
+
+        cd $GITHUB_REPO_URL
+        sudo docker-compose down
+        sudo docker-compose build
+        sudo docker-compose up -d
+        EOF
+        )
+
+        # Create a new launch template version
+        NEW_VERSION=$(aws ec2 create-launch-template-version \
+          --launch-template-name dine-dash-launch-template \
+          --version-description "New deployment $(date)" \
+          --launch-template-data "{
+            \"UserData\": \"$USER_DATA\"
+          }" | jq -r '.LaunchTemplateVersion.VersionNumber')
+        echo "NEW_LAUNCH_TEMPLATE_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+
+    - name: Update Auto Scaling Group
+      run: |
+        aws autoscaling update-auto-scaling-group \
+          --auto-scaling-group-name dine-dash-asg \
+          --launch-template "LaunchTemplateName=dine-dash-launch-template,Version=$NEW_LAUNCH_TEMPLATE_VERSION"
+
+    - name: Start Instance Refresh
+      run: |
+        aws autoscaling start-instance-refresh \
+          --auto-scaling-group-name dine-dash-asg \
+          --preferences '{"MinHealthyPercentage": 90, "InstanceWarmup": 300}'

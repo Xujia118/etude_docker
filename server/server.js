@@ -10,6 +10,10 @@ app.use(cors());
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "public/dist")));
 
+app.get("/health-check", (req, res) => {
+  res.status(200).send({ message: "Health check passed!" })
+})
+
 app.get("/api/images", async (req, res) => {
     const images = [
       {
@@ -26,7 +30,7 @@ app.get("/api/images", async (req, res) => {
       },
     ];
 
-    res.json({ images })
+    res.status(200).json({ images })
 })
 
 app.listen(PORT, () => {
