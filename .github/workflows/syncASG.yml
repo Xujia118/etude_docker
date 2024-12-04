@@ -21,11 +21,11 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: us-east-1
 
-    - name: Copy config.json in terraform to frontend
-      env: 
-        CONFIG_SRC: "/Documents/Projects/Dine-Dash-Infrastructure/alb/config.json"
-        CONFIG_DST: "/Documents/Projects/etude_docker/client/config.json"
-      run: cp $CONFIG_SRC $CONFIG_DST
+    # - name: Copy config.json in terraform to frontend
+    #   env: 
+    #     CONFIG_SRC: "/Documents/Projects/Dine-Dash-Infrastructure/alb/config.json"
+    #     CONFIG_DST: "/Documents/Projects/etude_docker/client/config.json"
+    #   run: cp $CONFIG_SRC $CONFIG_DST
 
     - name: Create New Launch Template Version
       id: create-launch-template
