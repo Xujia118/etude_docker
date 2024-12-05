@@ -29,6 +29,7 @@ jobs:
       env:
         GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
         LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
+        INSTANCE_TYPE: "t3.micro"
       run: |
         # Encode the User Data script
         USER_DATA=$(<<EOF
