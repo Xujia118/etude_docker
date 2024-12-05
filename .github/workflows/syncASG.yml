@@ -56,6 +56,8 @@ jobs:
         EOF
         )
 
+        ENCODED_USER_DATA=$(echo "$USER_DATA" | base64)
+
         # Create a new launch template version
         NEW_VERSION=$(aws ec2 create-launch-template-version \
           --launch-template-name $LAUNCH_TEMPLATE_NAME \
@@ -64,7 +66,7 @@ jobs:
             \"InstanceType\": \"$INSTANCE_TYPE\",
             \"ImageId\": \"$IMAGE_ID\",
             \"SecurityGroupIds\": [\"$SECURITY_GROUP_ID\"],
-            \"UserData\": \"$USER_DATA\"
+            \"UserData\": \"$ENCODED_USER_DATA\"
           }" | jq -r '.LaunchTemplateVersion.VersionNumber')
         echo "NEW_LAUNCH_TEMPLATE_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
 
