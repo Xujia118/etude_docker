@@ -27,7 +27,7 @@ jobs:
         GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
       run: |
         # Encode the User Data script
-        USER_DATA=$(base64 <<EOF
+        USER_DATA=$(<<EOF
         #!/bin/bash
         sudo apt update -y
 
