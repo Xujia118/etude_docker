@@ -13,6 +13,7 @@ jobs:
       LAUNCH_TEMPLATE_NAME: "webapp-launch-template"
       INSTANCE_TYPE: "t3.micro"
       IMAGE_ID: "ami-0d9fcbc04c8714eaa"
+      SECURITY_GROUP_ID: "sg-0b17225f5dc1be2b9"
 
     steps:
     - name: Checkout Code
@@ -33,6 +34,7 @@ jobs:
         LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
         INSTANCE_TYPE: ${{ env.INSTANCE_TYPE }}
         IMAGE_ID: ${{ env.IMAGE_ID }}
+        SECURITY_GROUP_ID: ${{ env.SECURITY_GROUP_ID }}
       run: |
         # Encode the User Data script
         USER_DATA=$(<<EOF
@@ -61,6 +63,7 @@ jobs:
           --launch-template-data "{
             \"InstanceType\": \"$INSTANCE_TYPE\",
             \"ImageId\": \"$IMAGE_ID\",
+            \"SecurityGroupIds\": [\"$SECURITY_GROUP_ID\"],
             \"UserData\": \"$USER_DATA\"
           }" | jq -r '.LaunchTemplateVersion.VersionNumber')
         echo "NEW_LAUNCH_TEMPLATE_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
