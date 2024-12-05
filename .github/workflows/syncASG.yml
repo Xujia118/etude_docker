@@ -11,6 +11,8 @@ jobs:
 
     env: 
       LAUNCH_TEMPLATE_NAME: "webapp-launch-template"
+      INSTANCE_TYPE: "t3.micro"
+      IMAGE_ID: "ami-0d9fcbc04c8714eaa"
 
     steps:
     - name: Checkout Code
@@ -29,7 +31,8 @@ jobs:
       env:
         GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
         LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
-        INSTANCE_TYPE: "t3.micro"
+        INSTANCE_TYPE: ${{ env.INSTANCE_TYPE }}
+        IMAGE_ID: ${{ env.IMAGE_ID }}
       run: |
         # Encode the User Data script
         USER_DATA=$(<<EOF
@@ -57,6 +60,7 @@ jobs:
           --version-description "New deployment $(date)" \
           --launch-template-data "{
             \"InstanceType\": \"$INSTANCE_TYPE\",
+            \"ImageId\": \"$IMAGE_ID\",
             \"UserData\": \"$USER_DATA\"
           }" | jq -r '.LaunchTemplateVersion.VersionNumber')
         echo "NEW_LAUNCH_TEMPLATE_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
