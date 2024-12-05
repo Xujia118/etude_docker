@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { albDns } from "./fetchAlbDns";
 
 import "./App.css";
 
@@ -11,7 +12,7 @@ function App() {
   }, []);
 
   async function fetchImages() {
-    const API_URL = import.meta.env.VITE_API_URL;
+    const API_URL = `${albDns}/api/images`;
 
     try {
       const response = await axios.get(API_URL);

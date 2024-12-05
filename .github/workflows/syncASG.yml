@@ -29,10 +29,7 @@ jobs:
         # Encode the User Data script
         USER_DATA=$(base64 <<EOF
         #!/bin/bash
-        sudo apt-get update -y
-        sudo apt-get install -y git docker.io docker-compose
-        sudo systemctl start docker
-        sudo systemctl enable docker
+        sudo apt update -y
 
         REPO_DIR="/home/ubuntu/my-webapp"
         if [ ! -d "$GITHUB_REPO_URL" ]; then
