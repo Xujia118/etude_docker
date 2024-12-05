@@ -9,6 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env: 
+      LAUNCH_TEMPLATE_NAME: "webapp-launch-template"
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -25,6 +28,7 @@ jobs:
       id: create-launch-template
       env:
         GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
+        LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
       run: |
         # Encode the User Data script
         USER_DATA=$(<<EOF
@@ -48,7 +52,7 @@ jobs:
 
         # Create a new launch template version
         NEW_VERSION=$(aws ec2 create-launch-template-version \
-          --launch-template-name dine-dash-launch-template \
+          --launch-template-name $LAUNCH_TEMPLATE_NAME \
           --version-description "New deployment $(date)" \
           --launch-template-data "{
             \"UserData\": \"$USER_DATA\"
@@ -56,13 +60,18 @@ jobs:
         echo "NEW_LAUNCH_TEMPLATE_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
 
     - name: Update Auto Scaling Group
+      env: 
+        ASG_NAME: "webapp-asg"  
+        LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
       run: |
         aws autoscaling update-auto-scaling-group \
-          --auto-scaling-group-name dine-dash-asg \
-          --launch-template "LaunchTemplateName=dine-dash-launch-template,Version=$NEW_LAUNCH_TEMPLATE_VERSION"
+          --auto-scaling-group-name $ASG_NAME \
+          --launch-template "LaunchTemplateName=$LAUNCH_TEMPLATE_NAME,Version=$NEW_LAUNCH_TEMPLATE_VERSION"
 
     - name: Start Instance Refresh
+      env: 
+        ASG_NAME: "webapp-asg"  
       run: |
         aws autoscaling start-instance-refresh \
-          --auto-scaling-group-name dine-dash-asg \
+          --auto-scaling-group-name $ASG_NAME \
           --preferences '{"MinHealthyPercentage": 90, "InstanceWarmup": 300}'
