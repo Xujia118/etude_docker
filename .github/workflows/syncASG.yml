@@ -14,6 +14,10 @@ jobs:
       INSTANCE_TYPE: "t3.micro"
       IMAGE_ID: "ami-0d9fcbc04c8714eaa"
       SECURITY_GROUP_ID: "sg-0b17225f5dc1be2b9"
+      
+      GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
+      REPO_DIR: "etude_docker" # to be replaced by dine-dash
+
 
     steps:
     - name: Checkout Code
@@ -30,18 +34,19 @@ jobs:
     - name: Create New Launch Template Version
       id: create-launch-template
       env:
-        GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
         LAUNCH_TEMPLATE_NAME: ${{ env.LAUNCH_TEMPLATE_NAME }}
         INSTANCE_TYPE: ${{ env.INSTANCE_TYPE }}
         IMAGE_ID: ${{ env.IMAGE_ID }}
         SECURITY_GROUP_ID: ${{ env.SECURITY_GROUP_ID }}
+        GITHUB_REPO_URL: ${{ env.GITHUB_REPO_URL }}
+        REPO_DIR: ${{ env.REPO_DIR }}
       run: |
         # Encode the User Data script
         USER_DATA=$(<<EOF
         #!/bin/bash
         sudo apt update -y
 
-        REPO_DIR="/home/ubuntu/my-webapp"
+        REPO_DIR="/home/ubuntu/${REPO_DIR}"
         if [ ! -d "$GITHUB_REPO_URL" ]; then
           git clone $GITHUB_REPO_URL
         else
