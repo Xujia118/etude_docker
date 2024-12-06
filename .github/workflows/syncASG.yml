@@ -12,7 +12,7 @@ jobs:
     env: 
       LAUNCH_TEMPLATE_NAME: "webapp-launch-template"
       INSTANCE_TYPE: "t3.micro"
-      IMAGE_ID: "ami-0bada3e66b11b4440"
+      IMAGE_ID: "ami-0bada3e66b11b4440" # This is bad. To update later.
       SECURITY_GROUP_ID: "sg-0b17225f5dc1be2b9"
       
       GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"

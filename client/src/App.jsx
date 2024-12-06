@@ -1,50 +1,31 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { albDns } from "./fetchAlbDns";
 
 import "./App.css";
 
 function App() {
   const [images, setImages] = useState([]);
 
-  useEffect(() => {
-    fetchAlbDnsAndImages();
-  }, []);
+  async function fetchImages() {
+    const BASE_URL = import.meta.env.VITE_API_URL;
+    const API_URL = `${BASE_URL}/api/images`;
 
-  async function fetchAlbDnsAndImages() {
-    albDns
-      .then(dns => {
-        if (!dns) {
-          throw new Error("ALB DNS could not be solved.");
-        }
+    try {
+      const response = await axios.get(API_URL);
 
-        const API_URL = `${dns}/api/images`;
-        return axios.get(API_URL);
-      })
-      .then(response => {
+      if (response && response.data) {
         setImages(response.data.images);
-      })
-      .catch(error => {
-        setImages([]);
-      })
+      } else {
+        console.log("Unexpected response:", response.data);
+      }
+    } catch (err) {
+      console.log(err.error); // TODO: update error handling
+    }
   }
 
-  // async function fetchAlbDnsAndImages() {
-  //   try {
-  //     const dns = await albDns;
-
-  //     if (!dns) {
-  //         throw new Error("ALB DNS could not be solved.")
-  //     }
-
-  //     const API_URL = `${dns}/api/images`
-  //     const response = await axios.get(API_URL);
-  //     setImages(response.data.images);
-  //   } catch (err) {
-  //     console.error("Error fetching images:", err);
-  //     setImages([]);
-  //   }
-  // }
+  useEffect(() => {
+    fetchImages();
+  }, []);
 
   return (
     <div className="cards">
