@@ -45,9 +45,9 @@ jobs:
         #!/bin/bash
         sudo apt update -y
 
-        PROJECT_DIR="/home/ubuntu/${PROJECT_NAME}"
+        PROJECT_DIR="/home/ubuntu/$PROJECT_NAME"
 
-        if [ ! -d "$REPO_DIR" ]; then
+        if [ ! -d "$PROJECT_DIR" ]; then
           git clone $GITHUB_REPO_URL $PROJECT_DIR
         else
           cd $PROJECT_DIR
