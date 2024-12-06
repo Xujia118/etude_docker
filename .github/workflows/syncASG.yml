@@ -18,7 +18,6 @@ jobs:
       GITHUB_REPO_URL: "https://github.com/Xujia118/etude_docker"
       PROJECT_NAME: "etude_docker" # to be replaced by dine-dash
 
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -39,7 +38,7 @@ jobs:
         IMAGE_ID: ${{ env.IMAGE_ID }}
         SECURITY_GROUP_ID: ${{ env.SECURITY_GROUP_ID }}
         GITHUB_REPO_URL: ${{ env.GITHUB_REPO_URL }}
-        REPO_DIR: ${{ env.REPO_DIR }}
+        PROJECT_NAME: ${{ env.PROJECT_NAME }}
       run: |
         # Encode the User Data script
         USER_DATA=$(cat <<EOF
