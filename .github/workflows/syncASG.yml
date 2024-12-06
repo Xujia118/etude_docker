@@ -49,7 +49,7 @@ jobs:
           git clone $GITHUB_REPO_URL $PROJECT_DIR
         else
           cd $PROJECT_DIR
-          git config --global --add safe.directory $PROJECT_DIR
+          git config --system --add safe.directory $PROJECT_DIR
           git pull origin main
         fi
 
