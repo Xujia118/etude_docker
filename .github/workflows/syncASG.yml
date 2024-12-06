@@ -42,7 +42,7 @@ jobs:
         REPO_DIR: ${{ env.REPO_DIR }}
       run: |
         # Encode the User Data script
-        USER_DATA=$(<<EOF
+        USER_DATA=$(cat <<EOF
         #!/bin/bash
         sudo apt update -y
 
@@ -61,7 +61,7 @@ jobs:
         EOF
         )
 
-        ENCODED_USER_DATA=$(echo "$USER_DATA" | base64)
+        ENCODED_USER_DATA=$(echo "$USER_DATA" | base64 -w 0)
 
         # Create a new launch template version
         NEW_VERSION=$(aws ec2 create-launch-template-version \
