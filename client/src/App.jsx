@@ -8,20 +8,43 @@ function App() {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    fetchImages();
+    fetchAlbDnsAndImages();
   }, []);
 
-  async function fetchImages() {
-    const API_URL = `${albDns}/api/images`;
+  async function fetchAlbDnsAndImages() {
+    albDns
+      .then(dns => {
+        if (!dns) {
+          throw new Error("ALB DNS could not be solved.");
+        }
 
-    try {
-      const response = await axios.get(API_URL);
-      setImages(response.data.images);
-    } catch (err) {
-      console.error("Error fetching images:", err);
-      setImages([]);
-    }
+        const API_URL = `${dns}/api/images`;
+        return axios.get(API_URL);
+      })
+      .then(response => {
+        setImages(response.data.images);
+      })
+      .catch(error => {
+        setImages([]);
+      })
   }
+
+  // async function fetchAlbDnsAndImages() {
+  //   try {
+  //     const dns = await albDns;
+
+  //     if (!dns) {
+  //         throw new Error("ALB DNS could not be solved.")
+  //     }
+
+  //     const API_URL = `${dns}/api/images`
+  //     const response = await axios.get(API_URL);
+  //     setImages(response.data.images);
+  //   } catch (err) {
+  //     console.error("Error fetching images:", err);
+  //     setImages([]);
+  //   }
+  // }
 
   return (
     <div className="cards">
