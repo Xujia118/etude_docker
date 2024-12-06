@@ -45,8 +45,6 @@ jobs:
         #!/bin/bash
         sudo apt update -y
 
-        PROJECT_DIR="/home/ubuntu/etude_docker"
-
         if [ ! -d "$PROJECT_DIR" ]; then
           git clone $GITHUB_REPO_URL $PROJECT_DIR
         else
