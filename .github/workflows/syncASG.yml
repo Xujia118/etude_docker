@@ -41,11 +41,11 @@ jobs:
         PROJECT_NAME: ${{ env.PROJECT_NAME }}
       run: |
         # Encode the User Data script
-        USER_DATA=$(cat <<EOF
+        USER_DATA=$(cat << EOF
         #!/bin/bash
         sudo apt update -y
 
-        PROJECT_DIR="/home/ubuntu/$PROJECT_NAME"
+        PROJECT_DIR="/home/ubuntu/etude_docker"
 
         if [ ! -d "$PROJECT_DIR" ]; then
           git clone $GITHUB_REPO_URL $PROJECT_DIR
