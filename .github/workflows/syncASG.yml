@@ -43,12 +43,13 @@ jobs:
         # Encode the User Data script
         USER_DATA=$(cat << EOF
         #!/bin/bash
-        sudo apt update -y
+        sudo apt upgrade -y
 
         if [ ! -d "$PROJECT_DIR" ]; then
           git clone $GITHUB_REPO_URL $PROJECT_DIR
         else
           cd $PROJECT_DIR
+          git config --global --add safe.directory $PROJECT_DIR
           git pull origin main
         fi
 
